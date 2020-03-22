@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.johnny.hm.mapper.AirStrategyMapper" >
+  <resultMap id="BaseResultMap" type="com.johnny.hm.bean.AirStrategy" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="hotelId" property="hotelId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="tempCorrect" property="tempCorrect" jdbcType="REAL" />
+    <result column="lowRunning" property="lowRunning" jdbcType="INTEGER" />
+    <result column="emptyPowerAllow" property="emptyPowerAllow" jdbcType="INTEGER" />
+    <result column="emptyControl" property="emptyControl" jdbcType="INTEGER" />
+    <result column="emptyCycleTime" property="emptyCycleTime" jdbcType="INTEGER" />
+    <result column="emptySummerTemp" property="emptySummerTemp" jdbcType="REAL" />
+    <result column="emptyWinterTemp" property="emptyWinterTemp" jdbcType="REAL" />
+    <result column="emptySpeed" property="emptySpeed" jdbcType="INTEGER" />
+    <result column="emptyMode" property="emptyMode" jdbcType="INTEGER" />
+    <result column="emptySwitch" property="emptySwitch" jdbcType="INTEGER" />
+    <result column="checkinControl" property="checkinControl" jdbcType="INTEGER" />
+    <result column="checkinCycleTime" property="checkinCycleTime" jdbcType="INTEGER" />
+    <result column="checkinSummerTemp" property="checkinSummerTemp" jdbcType="REAL" />
+    <result column="checkinWinterTemp" property="checkinWinterTemp" jdbcType="REAL" />
+    <result column="checkinSpeed" property="checkinSpeed" jdbcType="INTEGER" />
+    <result column="checkinMode" property="checkinMode" jdbcType="INTEGER" />
+    <result column="checkinSwitch" property="checkinSwitch" jdbcType="INTEGER" />
+    <result column="cardoutControl" property="cardoutControl" jdbcType="INTEGER" />
+    <result column="cardoutCycleTime" property="cardoutCycleTime" jdbcType="INTEGER" />
+    <result column="cardoutSummerTemp" property="cardoutSummerTemp" jdbcType="REAL" />
+    <result column="cardoutWinterTemp" property="cardoutWinterTemp" jdbcType="REAL" />
+    <result column="cardoutSpeed" property="cardoutSpeed" jdbcType="INTEGER" />
+    <result column="cardoutMode" property="cardoutMode" jdbcType="INTEGER" />
+    <result column="cardoutSwitch" property="cardoutSwitch" jdbcType="INTEGER" />
+    <result column="remoteControl" property="remoteControl" jdbcType="INTEGER" />
+    <result column="remoteTime" property="remoteTime" jdbcType="INTEGER" />
+    <result column="cardinSummerTemp" property="cardinSummerTemp" jdbcType="REAL" />
+    <result column="cardinWinterTemp" property="cardinWinterTemp" jdbcType="REAL" />
+    <result column="cardinSpeed" property="cardinSpeed" jdbcType="INTEGER" />
+    <result column="cardinMode" property="cardinMode" jdbcType="INTEGER" />
+    <result column="cardinSwitch" property="cardinSwitch" jdbcType="INTEGER" />
+    <result column="sleepModeSwitch" property="sleepModeSwitch" jdbcType="INTEGER" />
+    <result column="sleepModeStartTime" property="sleepModeStartTime" jdbcType="TIME" />
+    <result column="sleepModeEndTime" property="sleepModeEndTime" jdbcType="TIME" />
+    <result column="sleepModeTemp" property="sleepModeTemp" jdbcType="INTEGER" />
+    <result column="sleepModeAirSwitch" property="sleepModeAirSwitch" jdbcType="INTEGER" />
+    <result column="serverPowerAllow" property="serverPowerAllow" jdbcType="INTEGER" />
+    <result column="serverAirAllow" property="serverAirAllow" jdbcType="INTEGER" />
+    <result column="enabled" property="enabled" jdbcType="INTEGER" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="createUser" property="createUser" jdbcType="INTEGER" />
+    <result column="updateUser" property="updateUser" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, hotelId, name, tempCorrect, lowRunning, emptyPowerAllow, emptyControl, emptyCycleTime, 
+    emptySummerTemp, emptyWinterTemp, emptySpeed, emptyMode, emptySwitch, checkinControl, 
+    checkinCycleTime, checkinSummerTemp, checkinWinterTemp, checkinSpeed, checkinMode, 
+    checkinSwitch, cardoutControl, cardoutCycleTime, cardoutSummerTemp, cardoutWinterTemp, 
+    cardoutSpeed, cardoutMode, cardoutSwitch, remoteControl, remoteTime, cardinSummerTemp, 
+    cardinWinterTemp, cardinSpeed, cardinMode, cardinSwitch, sleepModeSwitch, sleepModeStartTime, 
+    sleepModeEndTime, sleepModeTemp, sleepModeAirSwitch, serverPowerAllow, serverAirAllow, 
+    enabled, createTime, updateTime, createUser, updateUser
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from airstrategy
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+    <!--查询所有策略-->
+    <select id="getStrategy" resultType="com.johnny.hm.bean.AirStrategy">
+        select * from airstrategy where hotelId=#{hotelId}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from airstrategy
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <!--删除-->
+    <delete id="delByIds">
+        delete from airstrategy where id in <foreach collection="ids" item="id" separator="," open="(" close=")">
+        #{id}
+    </foreach>
+    </delete>
+    <insert id="insert" parameterType="com.johnny.hm.bean.AirStrategy" >
+    insert into airstrategy (hotelId, name,
+      tempCorrect, lowRunning, emptyPowerAllow, 
+      emptyControl, emptyCycleTime, emptySummerTemp, 
+      emptyWinterTemp, emptySpeed, emptyMode, 
+      emptySwitch, checkinControl, checkinCycleTime, 
+      checkinSummerTemp, checkinWinterTemp, checkinSpeed, 
+      checkinMode, checkinSwitch, cardoutControl, 
+      cardoutCycleTime, cardoutSummerTemp, cardoutWinterTemp, 
+      cardoutSpeed, cardoutMode, cardoutSwitch, 
+      remoteControl, remoteTime, cardinSummerTemp, 
+      cardinWinterTemp, cardinSpeed, cardinMode, 
+      cardinSwitch, sleepModeSwitch, sleepModeStartTime, 
+      sleepModeEndTime, sleepModeTemp, sleepModeAirSwitch, 
+      serverPowerAllow, serverAirAllow, enabled, 
+    createUser,
+      updateUser)
+    values (#{hotelId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
+      #{tempCorrect,jdbcType=REAL}, #{lowRunning,jdbcType=INTEGER}, #{emptyPowerAllow,jdbcType=INTEGER}, 
+      #{emptyControl,jdbcType=INTEGER}, #{emptyCycleTime,jdbcType=INTEGER}, #{emptySummerTemp,jdbcType=REAL}, 
+      #{emptyWinterTemp,jdbcType=REAL}, #{emptySpeed,jdbcType=INTEGER}, #{emptyMode,jdbcType=INTEGER}, 
+      #{emptySwitch,jdbcType=INTEGER}, #{checkinControl,jdbcType=INTEGER}, #{checkinCycleTime,jdbcType=INTEGER}, 
+      #{checkinSummerTemp,jdbcType=REAL}, #{checkinWinterTemp,jdbcType=REAL}, #{checkinSpeed,jdbcType=INTEGER}, 
+      #{checkinMode,jdbcType=INTEGER}, #{checkinSwitch,jdbcType=INTEGER}, #{cardoutControl,jdbcType=INTEGER}, 
+      #{cardoutCycleTime,jdbcType=INTEGER}, #{cardoutSummerTemp,jdbcType=REAL}, #{cardoutWinterTemp,jdbcType=REAL}, 
+      #{cardoutSpeed,jdbcType=INTEGER}, #{cardoutMode,jdbcType=INTEGER}, #{cardoutSwitch,jdbcType=INTEGER}, 
+      #{remoteControl,jdbcType=INTEGER}, #{remoteTime,jdbcType=INTEGER}, #{cardinSummerTemp,jdbcType=REAL}, 
+      #{cardinWinterTemp,jdbcType=REAL}, #{cardinSpeed,jdbcType=INTEGER}, #{cardinMode,jdbcType=INTEGER}, 
+      #{cardinSwitch,jdbcType=INTEGER}, #{sleepModeSwitch,jdbcType=INTEGER}, #{sleepModeStartTime,jdbcType=TIME}, 
+      #{sleepModeEndTime,jdbcType=TIME}, #{sleepModeTemp,jdbcType=INTEGER}, #{sleepModeAirSwitch,jdbcType=INTEGER}, 
+      #{serverPowerAllow,jdbcType=INTEGER}, #{serverAirAllow,jdbcType=INTEGER}, #{enabled,jdbcType=INTEGER}, 
+       #{createUser,jdbcType=INTEGER},
+      #{updateUser,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.johnny.hm.bean.AirStrategy" >
+    insert into airstrategy
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="hotelId != null" >
+        hotelId,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="tempCorrect != null" >
+        tempCorrect,
+      </if>
+      <if test="lowRunning != null" >
+        lowRunning,
+      </if>
+      <if test="emptyPowerAllow != null" >
+        emptyPowerAllow,
+      </if>
+      <if test="emptyControl != null" >
+        emptyControl,
+      </if>
+      <if test="emptyCycleTime != null" >
+        emptyCycleTime,
+      </if>
+      <if test="emptySummerTemp != null" >
+        emptySummerTemp,
+      </if>
+      <if test="emptyWinterTemp != null" >
+        emptyWinterTemp,
+      </if>
+      <if test="emptySpeed != null" >
+        emptySpeed,
+      </if>
+      <if test="emptyMode != null" >
+        emptyMode,
+      </if>
+      <if test="emptySwitch != null" >
+        emptySwitch,
+      </if>
+      <if test="checkinControl != null" >
+        checkinControl,
+      </if>
+      <if test="checkinCycleTime != null" >
+        checkinCycleTime,
+      </if>
+      <if test="checkinSummerTemp != null" >
+        checkinSummerTemp,
+      </if>
+      <if test="checkinWinterTemp != null" >
+        checkinWinterTemp,
+      </if>
+      <if test="checkinSpeed != null" >
+        checkinSpeed,
+      </if>
+      <if test="checkinMode != null" >
+        checkinMode,
+      </if>
+      <if test="checkinSwitch != null" >
+        checkinSwitch,
+      </if>
+      <if test="cardoutControl != null" >
+        cardoutControl,
+      </if>
+      <if test="cardoutCycleTime != null" >
+        cardoutCycleTime,
+      </if>
+      <if test="cardoutSummerTemp != null" >
+        cardoutSummerTemp,
+      </if>
+      <if test="cardoutWinterTemp != null" >
+        cardoutWinterTemp,
+      </if>
+      <if test="cardoutSpeed != null" >
+        cardoutSpeed,
+      </if>
+      <if test="cardoutMode != null" >
+        cardoutMode,
+      </if>
+      <if test="cardoutSwitch != null" >
+        cardoutSwitch,
+      </if>
+      <if test="remoteControl != null" >
+        remoteControl,
+      </if>
+      <if test="remoteTime != null" >
+        remoteTime,
+      </if>
+      <if test="cardinSummerTemp != null" >
+        cardinSummerTemp,
+      </if>
+      <if test="cardinWinterTemp != null" >
+        cardinWinterTemp,
+      </if>
+      <if test="cardinSpeed != null" >
+        cardinSpeed,
+      </if>
+      <if test="cardinMode != null" >
+        cardinMode,
+      </if>
+      <if test="cardinSwitch != null" >
+        cardinSwitch,
+      </if>
+      <if test="sleepModeSwitch != null" >
+        sleepModeSwitch,
+      </if>
+      <if test="sleepModeStartTime != null" >
+        sleepModeStartTime,
+      </if>
+      <if test="sleepModeEndTime != null" >
+        sleepModeEndTime,
+      </if>
+      <if test="sleepModeTemp != null" >
+        sleepModeTemp,
+      </if>
+      <if test="sleepModeAirSwitch != null" >
+        sleepModeAirSwitch,
+      </if>
+      <if test="serverPowerAllow != null" >
+        serverPowerAllow,
+      </if>
+      <if test="serverAirAllow != null" >
+        serverAirAllow,
+      </if>
+      <if test="enabled != null" >
+        enabled,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="updateTime != null" >
+        updateTime,
+      </if>
+      <if test="createUser != null" >
+        createUser,
+      </if>
+      <if test="updateUser != null" >
+        updateUser,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="hotelId != null" >
+        #{hotelId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="tempCorrect != null" >
+        #{tempCorrect,jdbcType=REAL},
+      </if>
+      <if test="lowRunning != null" >
+        #{lowRunning,jdbcType=INTEGER},
+      </if>
+      <if test="emptyPowerAllow != null" >
+        #{emptyPowerAllow,jdbcType=INTEGER},
+      </if>
+      <if test="emptyControl != null" >
+        #{emptyControl,jdbcType=INTEGER},
+      </if>
+      <if test="emptyCycleTime != null" >
+        #{emptyCycleTime,jdbcType=INTEGER},
+      </if>
+      <if test="emptySummerTemp != null" >
+        #{emptySummerTemp,jdbcType=REAL},
+      </if>
+      <if test="emptyWinterTemp != null" >
+        #{emptyWinterTemp,jdbcType=REAL},
+      </if>
+      <if test="emptySpeed != null" >
+        #{emptySpeed,jdbcType=INTEGER},
+      </if>
+      <if test="emptyMode != null" >
+        #{emptyMode,jdbcType=INTEGER},
+      </if>
+      <if test="emptySwitch != null" >
+        #{emptySwitch,jdbcType=INTEGER},
+      </if>
+      <if test="checkinControl != null" >
+        #{checkinControl,jdbcType=INTEGER},
+      </if>
+      <if test="checkinCycleTime != null" >
+        #{checkinCycleTime,jdbcType=INTEGER},
+      </if>
+      <if test="checkinSummerTemp != null" >
+        #{checkinSummerTemp,jdbcType=REAL},
+      </if>
+      <if test="checkinWinterTemp != null" >
+        #{checkinWinterTemp,jdbcType=REAL},
+      </if>
+      <if test="checkinSpeed != null" >
+        #{checkinSpeed,jdbcType=INTEGER},
+      </if>
+      <if test="checkinMode != null" >
+        #{checkinMode,jdbcType=INTEGER},
+      </if>
+      <if test="checkinSwitch != null" >
+        #{checkinSwitch,jdbcType=INTEGER},
+      </if>
+      <if test="cardoutControl != null" >
+        #{cardoutControl,jdbcType=INTEGER},
+      </if>
+      <if test="cardoutCycleTime != null" >
+        #{cardoutCycleTime,jdbcType=INTEGER},
+      </if>
+      <if test="cardoutSummerTemp != null" >
+        #{cardoutSummerTemp,jdbcType=REAL},
+      </if>
+      <if test="cardoutWinterTemp != null" >
+        #{cardoutWinterTemp,jdbcType=REAL},
+      </if>
+      <if test="cardoutSpeed != null" >
+        #{cardoutSpeed,jdbcType=INTEGER},
+      </if>
+      <if test="cardoutMode != null" >
+        #{cardoutMode,jdbcType=INTEGER},
+      </if>
+      <if test="cardoutSwitch != null" >
+        #{cardoutSwitch,jdbcType=INTEGER},
+      </if>
+      <if test="remoteControl != null" >
+        #{remoteControl,jdbcType=INTEGER},
+      </if>
+      <if test="remoteTime != null" >
+        #{remoteTime,jdbcType=INTEGER},
+      </if>
+      <if test="cardinSummerTemp != null" >
+        #{cardinSummerTemp,jdbcType=REAL},
+      </if>
+      <if test="cardinWinterTemp != null" >
+        #{cardinWinterTemp,jdbcType=REAL},
+      </if>
+      <if test="cardinSpeed != null" >
+        #{cardinSpeed,jdbcType=INTEGER},
+      </if>
+      <if test="cardinMode != null" >
+        #{cardinMode,jdbcType=INTEGER},
+      </if>
+      <if test="cardinSwitch != null" >
+        #{cardinSwitch,jdbcType=INTEGER},
+      </if>
+      <if test="sleepModeSwitch != null" >
+        #{sleepModeSwitch,jdbcType=INTEGER},
+      </if>
+      <if test="sleepModeStartTime != null" >
+        #{sleepModeStartTime,jdbcType=TIME},
+      </if>
+      <if test="sleepModeEndTime != null" >
+        #{sleepModeEndTime,jdbcType=TIME},
+      </if>
+      <if test="sleepModeTemp != null" >
+        #{sleepModeTemp,jdbcType=INTEGER},
+      </if>
+      <if test="sleepModeAirSwitch != null" >
+        #{sleepModeAirSwitch,jdbcType=INTEGER},
+      </if>
+      <if test="serverPowerAllow != null" >
+        #{serverPowerAllow,jdbcType=INTEGER},
+      </if>
+      <if test="serverAirAllow != null" >
+        #{serverAirAllow,jdbcType=INTEGER},
+      </if>
+      <if test="enabled != null" >
+        #{enabled,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.johnny.hm.bean.AirStrategy" >
+    update airstrategy
+    <set >
+      <if test="hotelId != null" >
+        hotelId = #{hotelId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="tempCorrect != null" >
+        tempCorrect = #{tempCorrect,jdbcType=REAL},
+      </if>
+      <if test="lowRunning != null" >
+        lowRunning = #{lowRunning,jdbcType=INTEGER},
+      </if>
+      <if test="emptyPowerAllow != null" >
+        emptyPowerAllow = #{emptyPowerAllow,jdbcType=INTEGER},
+      </if>
+      <if test="emptyControl != null" >
+        emptyControl = #{emptyControl,jdbcType=INTEGER},
+      </if>
+      <if test="emptyCycleTime != null" >
+        emptyCycleTime = #{emptyCycleTime,jdbcType=INTEGER},
+      </if>
+      <if test="emptySummerTemp != null" >
+        emptySummerTemp = #{emptySummerTemp,jdbcType=REAL},
+      </if>
+      <if test="emptyWinterTemp != null" >
+        emptyWinterTemp = #{emptyWinterTemp,jdbcType=REAL},
+      </if>
+      <if test="emptySpeed != null" >
+        emptySpeed = #{emptySpeed,jdbcType=INTEGER},
+      </if>
+      <if test="emptyMode != null" >
+        emptyMode = #{emptyMode,jdbcType=INTEGER},
+      </if>
+      <if test="emptySwitch != null" >
+        emptySwitch = #{emptySwitch,jdbcType=INTEGER},
+      </if>
+      <if test="checkinControl != null" >
+        checkinControl = #{checkinControl,jdbcType=INTEGER},
+      </if>
+      <if test="checkinCycleTime != null" >
+        checkinCycleTime = #{checkinCycleTime,jdbcType=INTEGER},
+      </if>
+      <if test="checkinSummerTemp != null" >
+        checkinSummerTemp = #{checkinSummerTemp,jdbcType=REAL},
+      </if>
+      <if test="checkinWinterTemp != null" >
+        checkinWinterTemp = #{checkinWinterTemp,jdbcType=REAL},
+      </if>
+      <if test="checkinSpeed != null" >
+        checkinSpeed = #{checkinSpeed,jdbcType=INTEGER},
+      </if>
+      <if test="checkinMode != null" >
+        checkinMode = #{checkinMode,jdbcType=INTEGER},
+      </if>
+      <if test="checkinSwitch != null" >
+        checkinSwitch = #{checkinSwitch,jdbcType=INTEGER},
+      </if>
+      <if test="cardoutControl != null" >
+        cardoutControl = #{cardoutControl,jdbcType=INTEGER},
+      </if>
+      <if test="cardoutCycleTime != null" >
+        cardoutCycleTime = #{cardoutCycleTime,jdbcType=INTEGER},
+      </if>
+      <if test="cardoutSummerTemp != null" >
+        cardoutSummerTemp = #{cardoutSummerTemp,jdbcType=REAL},
+      </if>
+      <if test="cardoutWinterTemp != null" >
+        cardoutWinterTemp = #{cardoutWinterTemp,jdbcType=REAL},
+      </if>
+      <if test="cardoutSpeed != null" >
+        cardoutSpeed = #{cardoutSpeed,jdbcType=INTEGER},
+      </if>
+      <if test="cardoutMode != null" >
+        cardoutMode = #{cardoutMode,jdbcType=INTEGER},
+      </if>
+      <if test="cardoutSwitch != null" >
+        cardoutSwitch = #{cardoutSwitch,jdbcType=INTEGER},
+      </if>
+      <if test="remoteControl != null" >
+        remoteControl = #{remoteControl,jdbcType=INTEGER},
+      </if>
+      <if test="remoteTime != null" >
+        remoteTime = #{remoteTime,jdbcType=INTEGER},
+      </if>
+      <if test="cardinSummerTemp != null" >
+        cardinSummerTemp = #{cardinSummerTemp,jdbcType=REAL},
+      </if>
+      <if test="cardinWinterTemp != null" >
+        cardinWinterTemp = #{cardinWinterTemp,jdbcType=REAL},
+      </if>
+      <if test="cardinSpeed != null" >
+        cardinSpeed = #{cardinSpeed,jdbcType=INTEGER},
+      </if>
+      <if test="cardinMode != null" >
+        cardinMode = #{cardinMode,jdbcType=INTEGER},
+      </if>
+      <if test="cardinSwitch != null" >
+        cardinSwitch = #{cardinSwitch,jdbcType=INTEGER},
+      </if>
+      <if test="sleepModeSwitch != null" >
+        sleepModeSwitch = #{sleepModeSwitch,jdbcType=INTEGER},
+      </if>
+      <if test="sleepModeStartTime != null" >
+        sleepModeStartTime = #{sleepModeStartTime,jdbcType=TIME},
+      </if>
+      <if test="sleepModeEndTime != null" >
+        sleepModeEndTime = #{sleepModeEndTime,jdbcType=TIME},
+      </if>
+      <if test="sleepModeTemp != null" >
+        sleepModeTemp = #{sleepModeTemp,jdbcType=INTEGER},
+      </if>
+      <if test="sleepModeAirSwitch != null" >
+        sleepModeAirSwitch = #{sleepModeAirSwitch,jdbcType=INTEGER},
+      </if>
+      <if test="serverPowerAllow != null" >
+        serverPowerAllow = #{serverPowerAllow,jdbcType=INTEGER},
+      </if>
+      <if test="serverAirAllow != null" >
+        serverAirAllow = #{serverAirAllow,jdbcType=INTEGER},
+      </if>
+      <if test="enabled != null" >
+        enabled = #{enabled,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        createUser = #{createUser,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        updateUser = #{updateUser,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.johnny.hm.bean.AirStrategy" >
+    update airstrategy
+    set
+      name = #{name,jdbcType=VARCHAR},
+      tempCorrect = #{tempCorrect,jdbcType=REAL},
+      lowRunning = #{lowRunning,jdbcType=INTEGER},
+      emptyPowerAllow = #{emptyPowerAllow,jdbcType=INTEGER},
+      emptyControl = #{emptyControl,jdbcType=INTEGER},
+      emptyCycleTime = #{emptyCycleTime,jdbcType=INTEGER},
+      emptySummerTemp = #{emptySummerTemp,jdbcType=REAL},
+      emptyWinterTemp = #{emptyWinterTemp,jdbcType=REAL},
+      emptySpeed = #{emptySpeed,jdbcType=INTEGER},
+      emptyMode = #{emptyMode,jdbcType=INTEGER},
+      emptySwitch = #{emptySwitch,jdbcType=INTEGER},
+      checkinControl = #{checkinControl,jdbcType=INTEGER},
+      checkinCycleTime = #{checkinCycleTime,jdbcType=INTEGER},
+      checkinSummerTemp = #{checkinSummerTemp,jdbcType=REAL},
+      checkinWinterTemp = #{checkinWinterTemp,jdbcType=REAL},
+      checkinSpeed = #{checkinSpeed,jdbcType=INTEGER},
+      checkinMode = #{checkinMode,jdbcType=INTEGER},
+      checkinSwitch = #{checkinSwitch,jdbcType=INTEGER},
+      cardoutControl = #{cardoutControl,jdbcType=INTEGER},
+      cardoutCycleTime = #{cardoutCycleTime,jdbcType=INTEGER},
+      cardoutSummerTemp = #{cardoutSummerTemp,jdbcType=REAL},
+      cardoutWinterTemp = #{cardoutWinterTemp,jdbcType=REAL},
+      cardoutSpeed = #{cardoutSpeed,jdbcType=INTEGER},
+      cardoutMode = #{cardoutMode,jdbcType=INTEGER},
+      cardoutSwitch = #{cardoutSwitch,jdbcType=INTEGER},
+      remoteControl = #{remoteControl,jdbcType=INTEGER},
+      remoteTime = #{remoteTime,jdbcType=INTEGER},
+      cardinSummerTemp = #{cardinSummerTemp,jdbcType=REAL},
+      cardinWinterTemp = #{cardinWinterTemp,jdbcType=REAL},
+      cardinSpeed = #{cardinSpeed,jdbcType=INTEGER},
+      cardinMode = #{cardinMode,jdbcType=INTEGER},
+      cardinSwitch = #{cardinSwitch,jdbcType=INTEGER},
+      sleepModeSwitch = #{sleepModeSwitch,jdbcType=INTEGER},
+      sleepModeStartTime = #{sleepModeStartTime,jdbcType=TIME},
+      sleepModeEndTime = #{sleepModeEndTime,jdbcType=TIME},
+      sleepModeTemp = #{sleepModeTemp,jdbcType=INTEGER},
+      sleepModeAirSwitch = #{sleepModeAirSwitch,jdbcType=INTEGER},
+      serverPowerAllow = #{serverPowerAllow,jdbcType=INTEGER},
+      serverAirAllow = #{serverAirAllow,jdbcType=INTEGER},
+      enabled = #{enabled,jdbcType=INTEGER},
+      createUser = #{createUser,jdbcType=INTEGER},
+      updateUser = #{updateUser,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

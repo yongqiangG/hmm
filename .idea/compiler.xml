@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="hm-mapper" />
+        <module name="hm-service" />
+        <module name="hm-model" />
+        <module name="hm-web" />
+        <module name="udpserver" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="hm" target="1.8" />
+      <module name="hm-mapper" target="1.8" />
+      <module name="hm-model" target="1.8" />
+      <module name="hm-service" target="1.8" />
+      <module name="hm-web" target="1.8" />
+      <module name="hmserver" target="1.8" />
+      <module name="udpserver" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="hm-mapper" options="-parameters" />
+      <module name="hm-model" options="-parameters" />
+      <module name="hm-service" options="-parameters" />
+      <module name="hm-web" options="-parameters" />
+      <module name="udpserver" options="-parameters" />
+    </option>
+  </component>
+</project>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.johnny.hm.mapper.FwModuleMapper" >
+  <resultMap id="BaseResultMap" type="com.johnny.hm.bean.FwModule" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="fId" property="fId" jdbcType="INTEGER" />
+    <result column="mId" property="mId" jdbcType="INTEGER" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, fId, mId, createTime, updateTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List"/>
+    from fwmodule
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from fwmodule
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="delByFid">
+    delete from fwmodule where fid=#{fid}
+  </delete>
+  <insert id="insert" parameterType="com.johnny.hm.bean.FwModule" >
+    insert into fwmodule (id, fId, mId, 
+      createTime, updateTime)
+    values (#{id,jdbcType=INTEGER}, #{fId,jdbcType=INTEGER}, #{mId,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.johnny.hm.bean.FwModule" >
+    insert into fwmodule
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="fId != null" >
+        fId,
+      </if>
+      <if test="mId != null" >
+        mId,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="updateTime != null" >
+        updateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="fId != null" >
+        #{fId,jdbcType=INTEGER},
+      </if>
+      <if test="mId != null" >
+        #{mId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <insert id="addModule">
+    insert into fwmodule (fid,mid) values
+    <foreach collection="mids" item="mid" separator=",">
+      (#{fid},#{mid})
+    </foreach>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.johnny.hm.bean.FwModule" >
+    update fwmodule
+    <set >
+      <if test="fId != null" >
+        fId = #{fId,jdbcType=INTEGER},
+      </if>
+      <if test="mId != null" >
+        mId = #{mId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.johnny.hm.bean.FwModule" >
+    update fwmodule
+    set fId = #{fId,jdbcType=INTEGER},
+      mId = #{mId,jdbcType=INTEGER},
+      createTime = #{createTime,jdbcType=TIMESTAMP},
+      updateTime = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

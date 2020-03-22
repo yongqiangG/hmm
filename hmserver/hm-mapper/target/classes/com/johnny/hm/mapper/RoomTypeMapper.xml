@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.johnny.hm.mapper.RoomTypeMapper">
+    <resultMap id="BaseResultMap" type="com.johnny.hm.bean.RoomType">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="air1" property="air1" jdbcType="INTEGER"/>
+        <result column="air2" property="air2" jdbcType="INTEGER"/>
+        <result column="air3" property="air3" jdbcType="INTEGER"/>
+        <result column="air4" property="air4" jdbcType="INTEGER"/>
+        <result column="air5" property="air5" jdbcType="INTEGER"/>
+        <result column="air6" property="air6" jdbcType="INTEGER"/>
+        <result column="air7" property="air7" jdbcType="INTEGER"/>
+        <result column="air8" property="air8" jdbcType="INTEGER"/>
+        <result column="tv1" property="tv1" jdbcType="INTEGER"/>
+        <result column="tv2" property="tv2" jdbcType="INTEGER"/>
+        <result column="tv3" property="tv3" jdbcType="INTEGER"/>
+        <result column="tv4" property="tv4" jdbcType="INTEGER"/>
+        <result column="tv5" property="tv5" jdbcType="INTEGER"/>
+        <result column="tv6" property="tv6" jdbcType="INTEGER"/>
+        <result column="tv7" property="tv7" jdbcType="INTEGER"/>
+        <result column="tv8" property="tv8" jdbcType="INTEGER"/>
+        <result column="safeTimeout" property="safeTimeout" jdbcType="INTEGER"/>
+        <result column="cardTimeout" property="cardTimeout" jdbcType="INTEGER"/>
+        <result column="openDoorTimeout" property="openDoorTimeout" jdbcType="INTEGER"/>
+        <result column="airStatus" property="airStatus" jdbcType="INTEGER"/>
+        <result column="logicCloudUpdateTime" property="logicCloudUpdateTime" jdbcType="TIMESTAMP"/>
+        <result column="logicVersion" property="logicVersion" jdbcType="INTEGER"/>
+        <result column="serverAllowAir" property="serverAllowAir" jdbcType="INTEGER"/>
+        <result column="serverAllowPower" property="serverAllowPower" jdbcType="INTEGER"/>
+        <result column="isWireless" property="isWireless" jdbcType="INTEGER"/>
+        <result column="wirelessLogicVersion" property="wirelessLogicVersion" jdbcType="INTEGER"/>
+        <result column="startTime1" property="startTime1" jdbcType="INTEGER"/>
+        <result column="endTime1" property="endTime1" jdbcType="INTEGER"/>
+        <result column="startTime2" property="startTime2" jdbcType="INTEGER"/>
+        <result column="endTime2" property="endTime2" jdbcType="INTEGER"/>
+        <result column="startTime3" property="startTime3" jdbcType="INTEGER"/>
+        <result column="endTime3" property="endTime3" jdbcType="INTEGER"/>
+        <result column="startTime4" property="startTime4" jdbcType="INTEGER"/>
+        <result column="endTime4" property="endTime4" jdbcType="INTEGER"/>
+        <result column="nightStartHour" property="nightStartHour" jdbcType="INTEGER"/>
+        <result column="nightStartMin" property="nightStartMin" jdbcType="INTEGER"/>
+        <result column="nightEndHour" property="nightEndHour" jdbcType="INTEGER"/>
+        <result column="nightEndMin" property="nightEndMin" jdbcType="INTEGER"/>
+        <result column="hotelId" property="hotelId" jdbcType="INTEGER"/>
+        <result column="createDate" property="createDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="RoomTypeWithAir" type="com.johnny.hm.bean.RoomType" extends="BaseResultMap">
+        <collection property="airs" ofType="com.johnny.hm.bean.Air">
+            <id column="aid" property="id" jdbcType="INTEGER"/>
+            <id column="airNo" property="airNo" jdbcType="INTEGER"/>
+            <id column="airName" property="airName" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, name, air1, air2, air3, air4, air5, air6, air7, air8, tv1, tv2, tv3, tv4, tv5,
+    tv6, tv7, tv8, safeTimeout, cardTimeout, openDoorTimeout, airStatus, logicCloudUpdateTime, 
+    logicVersion, serverAllowAir, serverAllowPower, isWireless, wirelessLogicVersion, 
+    startTime1, endTime1, startTime2, endTime2, startTime3, endTime3, startTime4, endTime4, 
+    nightStartHour, nightStartMin, nightEndHour, nightEndMin, hotelId,createDate
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from roomtype
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <!--获取房型-->
+    <select id="getRoomType" resultType="com.johnny.hm.bean.RoomType">
+        select
+        <include refid="Base_Column_List"/>
+        from roomtype where hotelId=#{id} order by id
+    </select>
+    <!--获取带有空调名称的房型-->
+    <select id="getRoomTypeWithAir" resultMap="RoomTypeWithAir">
+        select r.*, a.id as aid, a.airno as airNo, a.airname as airName
+        from roomtype r
+                 LEFT JOIN air a
+                           on r.id = a.roomtypeid
+        where hotelId = #{id} order by r.id,airNo
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from roomtype
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <!--批量删除-->
+    <delete id="delRoomType">
+        delete from roomtype where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <insert id="insert" parameterType="com.johnny.hm.bean.RoomType">
+        insert into roomtype (id, name, air1,
+                              air2, air3, air4, air5,
+                              air6, air7, air8, tv1,
+                              tv2, tv3, tv4, tv5,
+                              tv6, tv7, tv8, safeTimeout,
+                              cardTimeout, openDoorTimeout, airStatus,
+                              logicCloudUpdateTime, logicVersion, serverAllowAir,
+                              serverAllowPower, isWireless, wirelessLogicVersion,
+                              startTime1, endTime1, startTime2,
+                              endTime2, startTime3, endTime3,
+                              startTime4, endTime4, nightStartHour,
+                              nightStartMin, nightEndHour, nightEndMin,
+                              hotelId, createDate)
+        values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{air1,jdbcType=INTEGER},
+                #{air2,jdbcType=INTEGER}, #{air3,jdbcType=INTEGER}, #{air4,jdbcType=INTEGER}, #{air5,jdbcType=INTEGER},
+                #{air6,jdbcType=INTEGER}, #{air7,jdbcType=INTEGER}, #{air8,jdbcType=INTEGER}, #{tv1,jdbcType=INTEGER},
+                #{tv2,jdbcType=INTEGER}, #{tv3,jdbcType=INTEGER}, #{tv4,jdbcType=INTEGER}, #{tv5,jdbcType=INTEGER},
+                #{tv6,jdbcType=INTEGER}, #{tv7,jdbcType=INTEGER}, #{tv8,jdbcType=INTEGER},
+                #{safeTimeout,jdbcType=INTEGER},
+                #{cardTimeout,jdbcType=INTEGER}, #{openDoorTimeout,jdbcType=INTEGER}, #{airStatus,jdbcType=INTEGER},
+                #{logicCloudUpdateTime,jdbcType=TIMESTAMP}, #{logicVersion,jdbcType=INTEGER},
+                #{serverAllowAir,jdbcType=INTEGER},
+                #{serverAllowPower,jdbcType=INTEGER}, #{isWireless,jdbcType=INTEGER},
+                #{wirelessLogicVersion,jdbcType=INTEGER},
+                #{startTime1,jdbcType=INTEGER}, #{endTime1,jdbcType=INTEGER}, #{startTime2,jdbcType=INTEGER},
+                #{endTime2,jdbcType=INTEGER}, #{startTime3,jdbcType=INTEGER}, #{endTime3,jdbcType=INTEGER},
+                #{startTime4,jdbcType=INTEGER}, #{endTime4,jdbcType=INTEGER}, #{nightStartHour,jdbcType=INTEGER},
+                #{nightStartMin,jdbcType=INTEGER}, #{nightEndHour,jdbcType=INTEGER}, #{nightEndMin,jdbcType=INTEGER},
+                #{hotelId,jdbcType=INTEGER}, now())
+    </insert>
+    <insert id="insertSelective" parameterType="com.johnny.hm.bean.RoomType">
+        insert into roomtype
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="air1 != null">
+                air1,
+            </if>
+            <if test="air2 != null">
+                air2,
+            </if>
+            <if test="air3 != null">
+                air3,
+            </if>
+            <if test="air4 != null">
+                air4,
+            </if>
+            <if test="air5 != null">
+                air5,
+            </if>
+            <if test="air6 != null">
+                air6,
+            </if>
+            <if test="air7 != null">
+                air7,
+            </if>
+            <if test="air8 != null">
+                air8,
+            </if>
+            <if test="tv1 != null">
+                tv1,
+            </if>
+            <if test="tv2 != null">
+                tv2,
+            </if>
+            <if test="tv3 != null">
+                tv3,
+            </if>
+            <if test="tv4 != null">
+                tv4,
+            </if>
+            <if test="tv5 != null">
+                tv5,
+            </if>
+            <if test="tv6 != null">
+                tv6,
+            </if>
+            <if test="tv7 != null">
+                tv7,
+            </if>
+            <if test="tv8 != null">
+                tv8,
+            </if>
+            <if test="safeTimeout != null">
+                safeTimeout,
+            </if>
+            <if test="cardTimeout != null">
+                cardTimeout,
+            </if>
+            <if test="openDoorTimeout != null">
+                openDoorTimeout,
+            </if>
+            <if test="airStatus != null">
+                airStatus,
+            </if>
+            <if test="logicCloudUpdateTime != null">
+                logicCloudUpdateTime,
+            </if>
+            <if test="logicVersion != null">
+                logicVersion,
+            </if>
+            <if test="serverAllowAir != null">
+                serverAllowAir,
+            </if>
+            <if test="serverAllowPower != null">
+                serverAllowPower,
+            </if>
+            <if test="isWireless != null">
+                isWireless,
+            </if>
+            <if test="wirelessLogicVersion != null">
+                wirelessLogicVersion,
+            </if>
+            <if test="startTime1 != null">
+                startTime1,
+            </if>
+            <if test="endTime1 != null">
+                endTime1,
+            </if>
+            <if test="startTime2 != null">
+                startTime2,
+            </if>
+            <if test="endTime2 != null">
+                endTime2,
+            </if>
+            <if test="startTime3 != null">
+                startTime3,
+            </if>
+            <if test="endTime3 != null">
+                endTime3,
+            </if>
+            <if test="startTime4 != null">
+                startTime4,
+            </if>
+            <if test="endTime4 != null">
+                endTime4,
+            </if>
+            <if test="nightStartHour != null">
+                nightStartHour,
+            </if>
+            <if test="nightStartMin != null">
+                nightStartMin,
+            </if>
+            <if test="nightEndHour != null">
+                nightEndHour,
+            </if>
+            <if test="nightEndMin != null">
+                nightEndMin,
+            </if>
+            <if test="hotelId != null">
+                hotelId,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="air1 != null">
+                #{air1,jdbcType=INTEGER},
+            </if>
+            <if test="air2 != null">
+                #{air2,jdbcType=INTEGER},
+            </if>
+            <if test="air3 != null">
+                #{air3,jdbcType=INTEGER},
+            </if>
+            <if test="air4 != null">
+                #{air4,jdbcType=INTEGER},
+            </if>
+            <if test="air5 != null">
+                #{air5,jdbcType=INTEGER},
+            </if>
+            <if test="air6 != null">
+                #{air6,jdbcType=INTEGER},
+            </if>
+            <if test="air7 != null">
+                #{air7,jdbcType=INTEGER},
+            </if>
+            <if test="air8 != null">
+                #{air8,jdbcType=INTEGER},
+            </if>
+            <if test="tv1 != null">
+                #{tv1,jdbcType=INTEGER},
+            </if>
+            <if test="tv2 != null">
+                #{tv2,jdbcType=INTEGER},
+            </if>
+            <if test="tv3 != null">
+                #{tv3,jdbcType=INTEGER},
+            </if>
+            <if test="tv4 != null">
+                #{tv4,jdbcType=INTEGER},
+            </if>
+            <if test="tv5 != null">
+                #{tv5,jdbcType=INTEGER},
+            </if>
+            <if test="tv6 != null">
+                #{tv6,jdbcType=INTEGER},
+            </if>
+            <if test="tv7 != null">
+                #{tv7,jdbcType=INTEGER},
+            </if>
+            <if test="tv8 != null">
+                #{tv8,jdbcType=INTEGER},
+            </if>
+            <if test="safeTimeout != null">
+                #{safeTimeout,jdbcType=INTEGER},
+            </if>
+            <if test="cardTimeout != null">
+                #{cardTimeout,jdbcType=INTEGER},
+            </if>
+            <if test="openDoorTimeout != null">
+                #{openDoorTimeout,jdbcType=INTEGER},
+            </if>
+            <if test="airStatus != null">
+                #{airStatus,jdbcType=INTEGER},
+            </if>
+            <if test="logicCloudUpdateTime != null">
+                #{logicCloudUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="logicVersion != null">
+                #{logicVersion,jdbcType=INTEGER},
+            </if>
+            <if test="serverAllowAir != null">
+                #{serverAllowAir,jdbcType=INTEGER},
+            </if>
+            <if test="serverAllowPower != null">
+                #{serverAllowPower,jdbcType=INTEGER},
+            </if>
+            <if test="isWireless != null">
+                #{isWireless,jdbcType=INTEGER},
+            </if>
+            <if test="wirelessLogicVersion != null">
+                #{wirelessLogicVersion,jdbcType=INTEGER},
+            </if>
+            <if test="startTime1 != null">
+                #{startTime1,jdbcType=INTEGER},
+            </if>
+            <if test="endTime1 != null">
+                #{endTime1,jdbcType=INTEGER},
+            </if>
+            <if test="startTime2 != null">
+                #{startTime2,jdbcType=INTEGER},
+            </if>
+            <if test="endTime2 != null">
+                #{endTime2,jdbcType=INTEGER},
+            </if>
+            <if test="startTime3 != null">
+                #{startTime3,jdbcType=INTEGER},
+            </if>
+            <if test="endTime3 != null">
+                #{endTime3,jdbcType=INTEGER},
+            </if>
+            <if test="startTime4 != null">
+                #{startTime4,jdbcType=INTEGER},
+            </if>
+            <if test="endTime4 != null">
+                #{endTime4,jdbcType=INTEGER},
+            </if>
+            <if test="nightStartHour != null">
+                #{nightStartHour,jdbcType=INTEGER},
+            </if>
+            <if test="nightStartMin != null">
+                #{nightStartMin,jdbcType=INTEGER},
+            </if>
+            <if test="nightEndHour != null">
+                #{nightEndHour,jdbcType=INTEGER},
+            </if>
+            <if test="nightEndMin != null">
+                #{nightEndMin,jdbcType=INTEGER},
+            </if>
+            <if test="hotelId != null">
+                #{hotelId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.johnny.hm.bean.RoomType">
+        update roomtype
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="air1 != null">
+                air1 = #{air1,jdbcType=INTEGER},
+            </if>
+            <if test="air2 != null">
+                air2 = #{air2,jdbcType=INTEGER},
+            </if>
+            <if test="air3 != null">
+                air3 = #{air3,jdbcType=INTEGER},
+            </if>
+            <if test="air4 != null">
+                air4 = #{air4,jdbcType=INTEGER},
+            </if>
+            <if test="air5 != null">
+                air5 = #{air5,jdbcType=INTEGER},
+            </if>
+            <if test="air6 != null">
+                air6 = #{air6,jdbcType=INTEGER},
+            </if>
+            <if test="air7 != null">
+                air7 = #{air7,jdbcType=INTEGER},
+            </if>
+            <if test="air8 != null">
+                air8 = #{air8,jdbcType=INTEGER},
+            </if>
+            <if test="tv1 != null">
+                tv1 = #{tv1,jdbcType=INTEGER},
+            </if>
+            <if test="tv2 != null">
+                tv2 = #{tv2,jdbcType=INTEGER},
+            </if>
+            <if test="tv3 != null">
+                tv3 = #{tv3,jdbcType=INTEGER},
+            </if>
+            <if test="tv4 != null">
+                tv4 = #{tv4,jdbcType=INTEGER},
+            </if>
+            <if test="tv5 != null">
+                tv5 = #{tv5,jdbcType=INTEGER},
+            </if>
+            <if test="tv6 != null">
+                tv6 = #{tv6,jdbcType=INTEGER},
+            </if>
+            <if test="tv7 != null">
+                tv7 = #{tv7,jdbcType=INTEGER},
+            </if>
+            <if test="tv8 != null">
+                tv8 = #{tv8,jdbcType=INTEGER},
+            </if>
+            <if test="safeTimeout != null">
+                safeTimeout = #{safeTimeout,jdbcType=INTEGER},
+            </if>
+            <if test="cardTimeout != null">
+                cardTimeout = #{cardTimeout,jdbcType=INTEGER},
+            </if>
+            <if test="openDoorTimeout != null">
+                openDoorTimeout = #{openDoorTimeout,jdbcType=INTEGER},
+            </if>
+            <if test="airStatus != null">
+                airStatus = #{airStatus,jdbcType=INTEGER},
+            </if>
+            <if test="logicCloudUpdateTime != null">
+                logicCloudUpdateTime = #{logicCloudUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="logicVersion != null">
+                logicVersion = #{logicVersion,jdbcType=INTEGER},
+            </if>
+            <if test="serverAllowAir != null">
+                serverAllowAir = #{serverAllowAir,jdbcType=INTEGER},
+            </if>
+            <if test="serverAllowPower != null">
+                serverAllowPower = #{serverAllowPower,jdbcType=INTEGER},
+            </if>
+            <if test="isWireless != null">
+                isWireless = #{isWireless,jdbcType=INTEGER},
+            </if>
+            <if test="wirelessLogicVersion != null">
+                wirelessLogicVersion = #{wirelessLogicVersion,jdbcType=INTEGER},
+            </if>
+            <if test="startTime1 != null">
+                startTime1 = #{startTime1,jdbcType=INTEGER},
+            </if>
+            <if test="endTime1 != null">
+                endTime1 = #{endTime1,jdbcType=INTEGER},
+            </if>
+            <if test="startTime2 != null">
+                startTime2 = #{startTime2,jdbcType=INTEGER},
+            </if>
+            <if test="endTime2 != null">
+                endTime2 = #{endTime2,jdbcType=INTEGER},
+            </if>
+            <if test="startTime3 != null">
+                startTime3 = #{startTime3,jdbcType=INTEGER},
+            </if>
+            <if test="endTime3 != null">
+                endTime3 = #{endTime3,jdbcType=INTEGER},
+            </if>
+            <if test="startTime4 != null">
+                startTime4 = #{startTime4,jdbcType=INTEGER},
+            </if>
+            <if test="endTime4 != null">
+                endTime4 = #{endTime4,jdbcType=INTEGER},
+            </if>
+            <if test="nightStartHour != null">
+                nightStartHour = #{nightStartHour,jdbcType=INTEGER},
+            </if>
+            <if test="nightStartMin != null">
+                nightStartMin = #{nightStartMin,jdbcType=INTEGER},
+            </if>
+            <if test="nightEndHour != null">
+                nightEndHour = #{nightEndHour,jdbcType=INTEGER},
+            </if>
+            <if test="nightEndMin != null">
+                nightEndMin = #{nightEndMin,jdbcType=INTEGER},
+            </if>
+            <if test="hotelId != null">
+                hotelId = #{hotelId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.johnny.hm.bean.RoomType">
+        update roomtype
+        set name                 = #{name,jdbcType=VARCHAR},
+            air1                 = #{air1,jdbcType=INTEGER},
+            air2                 = #{air2,jdbcType=INTEGER},
+            air3                 = #{air3,jdbcType=INTEGER},
+            air4                 = #{air4,jdbcType=INTEGER},
+            air5                 = #{air5,jdbcType=INTEGER},
+            air6                 = #{air6,jdbcType=INTEGER},
+            air7                 = #{air7,jdbcType=INTEGER},
+            air8                 = #{air8,jdbcType=INTEGER},
+            tv1                  = #{tv1,jdbcType=INTEGER},
+            tv2                  = #{tv2,jdbcType=INTEGER},
+            tv3                  = #{tv3,jdbcType=INTEGER},
+            tv4                  = #{tv4,jdbcType=INTEGER},
+            tv5                  = #{tv5,jdbcType=INTEGER},
+            tv6                  = #{tv6,jdbcType=INTEGER},
+            tv7                  = #{tv7,jdbcType=INTEGER},
+            tv8                  = #{tv8,jdbcType=INTEGER},
+            safeTimeout          = #{safeTimeout,jdbcType=INTEGER},
+            cardTimeout          = #{cardTimeout,jdbcType=INTEGER},
+            openDoorTimeout      = #{openDoorTimeout,jdbcType=INTEGER},
+            airStatus            = #{airStatus,jdbcType=INTEGER},
+            logicCloudUpdateTime = #{logicCloudUpdateTime,jdbcType=TIMESTAMP},
+            logicVersion         = #{logicVersion,jdbcType=INTEGER},
+            serverAllowAir       = #{serverAllowAir,jdbcType=INTEGER},
+            serverAllowPower     = #{serverAllowPower,jdbcType=INTEGER},
+            isWireless           = #{isWireless,jdbcType=INTEGER},
+            wirelessLogicVersion = #{wirelessLogicVersion,jdbcType=INTEGER},
+            startTime1           = #{startTime1,jdbcType=INTEGER},
+            endTime1             = #{endTime1,jdbcType=INTEGER},
+            startTime2           = #{startTime2,jdbcType=INTEGER},
+            endTime2             = #{endTime2,jdbcType=INTEGER},
+            startTime3           = #{startTime3,jdbcType=INTEGER},
+            endTime3             = #{endTime3,jdbcType=INTEGER},
+            startTime4           = #{startTime4,jdbcType=INTEGER},
+            endTime4             = #{endTime4,jdbcType=INTEGER},
+            nightStartHour       = #{nightStartHour,jdbcType=INTEGER},
+            nightStartMin        = #{nightStartMin,jdbcType=INTEGER},
+            nightEndHour         = #{nightEndHour,jdbcType=INTEGER},
+            nightEndMin          = #{nightEndMin,jdbcType=INTEGER},
+            hotelId              = #{hotelId,jdbcType=INTEGER},
+            createDate           = #{createDate}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateRoomType" parameterType="com.johnny.hm.bean.RoomType">
+        update roomtype
+        set name       = #{name,jdbcType=VARCHAR},
+            isWireless = #{isWireless,jdbcType=INTEGER},
+            createDate = #{createDate}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

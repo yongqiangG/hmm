@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.johnny.hm.mapper.RoomMapper">
+    <resultMap id="BaseResultMap" type="com.johnny.hm.bean.Room">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="roomNo" property="roomNo" jdbcType="VARCHAR"/>
+        <result column="mergeStatus" property="mergeStatus" jdbcType="VARCHAR"/>
+        <result column="floorId" property="floorId" jdbcType="INTEGER"/>
+        <result column="checkInTime" property="checkInTime" jdbcType="TIMESTAMP"/>
+        <result column="machineCode" property="machineCode" jdbcType="VARCHAR"/>
+        <result column="guestName" property="guestName" jdbcType="VARCHAR"/>
+        <result column="roomTypeId" property="roomTypeId" jdbcType="INTEGER"/>
+        <result column="roomStatus" property="roomStatus" jdbcType="INTEGER"/>
+        <result column="enabled" property="enabled" jdbcType="BIT"/>
+        <result column="createDate" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="ip" property="ip" jdbcType="VARCHAR"/>
+        <result column="port" property="port" jdbcType="VARCHAR"/>
+        <result column="isOnLine" property="isOnline" jdbcType="BIT"/>
+        <result column="LogicVersion" property="logicVersion" jdbcType="INTEGER"/>
+        <result column="roomStatusChangeTime" property="roomStatusChangeTime" jdbcType="TIMESTAMP"/>
+        <result column="airSettingSendStatus" property="airSettingSendStatus" jdbcType="BIT"/>
+        <result column="energySettingSendStatus" property="energySettingSendStatus" jdbcType="BIT"/>
+        <result column="takePowerSettingSendStatus" property="takePowerSettingSendStatus" jdbcType="BIT"/>
+        <result column="seasonSettingSendStatus" property="seasonSettingSendStatus" jdbcType="BIT"/>
+        <result column="expiredDate" property="expiredDate" jdbcType="TIMESTAMP"/>
+        <result column="serverTime" property="serverTime" jdbcType="TIMESTAMP"/>
+        <result column="hotelId" property="hotelId" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="AllInfo" type="com.johnny.hm.bean.Room" extends="BaseResultMap">
+        <association property="building" javaType="com.johnny.hm.bean.Building">
+            <id column="bid" property="id"></id>
+            <result column="bname" property="name"></result>
+        </association>
+        <association property="txFloor" javaType="com.johnny.hm.bean.TxFloor">
+            <id column="fid" property="id"></id>
+            <result column="fname" property="name"></result>
+        </association>
+        <association property="roomType" javaType="com.johnny.hm.bean.RoomType">
+            <id column="rid" property="id"></id>
+            <result column="rname" property="name"></result>
+        </association>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, roomNo, mergeStatus, floorId, checkInTime, machineCode, guestName, roomTypeId,
+    roomStatus, enabled, createDate, ip, port, isOnLine, LogicVersion, roomStatusChangeTime, 
+    airSettingSendStatus, energySettingSendStatus, takePowerSettingSendStatus, seasonSettingSendStatus, 
+    expiredDate, serverTime, hotelId
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from room
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <!--获取房间-->
+    <select id="getRoom" resultMap="AllInfo">
+        select r.*, f.id as fid, f.name as fname, b.id as bid, b.name as bname, rt.id as rid, rt.name as rname
+        from room r,
+        txfloor f,
+        building b,
+        roomtype rt
+        where r.hotelId = #{id}
+        and r.floorid = f.id
+        and f.buildingid = b.id
+        and r.roomtypeid = rt.id
+        <if test="kw!=''">
+            and r.roomNo like concat('%',#{kw},'%')
+        </if>
+
+        order by r.id
+        <if test="page!=null and size!=null">
+            limit #{page},#{size}
+        </if>
+    </select>
+    <select id="getTotal" resultType="java.lang.Integer">
+        select count(*) from room r
+        <where>
+            <if test="hotelId!=null">
+                and r.hotelId=#{hotelId}
+            </if>
+            <if test="kw!=''">
+                and r.roomNo like concat('%',#{kw},'%')
+            </if>
+        </where>
+    </select>
+    <!--根据房型id获取设备-->
+    <select id="getRoomByRid" resultMap="AllInfo">
+        select r.*, f.id as fid, f.name as fname, b.id as bid, b.name as bname, rt.id as rid, rt.name as rname
+        from room r,
+             txfloor f,
+             building b,
+             roomtype rt
+        where roomTypeId = #{rid}
+          and r.floorid = f.id
+          and f.buildingid = b.id
+          and r.roomtypeid = rt.id
+        order by r.id
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from room
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <!--删除-->
+    <delete id="delRoom">
+        delete from room where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <insert id="insert" parameterType="com.johnny.hm.bean.Room">
+        insert into room (roomNo, mergeStatus,
+                          floorId, checkInTime, machineCode,
+                          guestName, roomTypeId, roomStatus,
+                          enabled, ip,
+                          port, isOnLine, LogicVersion,
+                          roomStatusChangeTime, airSettingSendStatus,
+                          energySettingSendStatus, takePowerSettingSendStatus,
+                          seasonSettingSendStatus, expiredDate, serverTime,
+                          hotelId)
+        values (#{roomNo,jdbcType=VARCHAR}, #{mergeStatus,jdbcType=VARCHAR},
+                #{floorId,jdbcType=INTEGER}, #{checkInTime,jdbcType=TIMESTAMP}, #{machineCode,jdbcType=VARCHAR},
+                #{guestName,jdbcType=VARCHAR}, #{roomTypeId,jdbcType=INTEGER}, #{roomStatus,jdbcType=INTEGER},
+                #{enabled,jdbcType=BIT}, #{ip,jdbcType=VARCHAR},
+                #{port,jdbcType=VARCHAR}, #{isOnline,jdbcType=BIT}, #{logicVersion,jdbcType=INTEGER},
+                #{roomStatusChangeTime,jdbcType=TIMESTAMP}, #{airSettingSendStatus,jdbcType=BIT},
+                #{energySettingSendStatus,jdbcType=BIT}, #{takePowerSettingSendStatus,jdbcType=BIT},
+                #{seasonSettingSendStatus,jdbcType=BIT}, #{expiredDate,jdbcType=TIMESTAMP},
+                #{serverTime,jdbcType=TIMESTAMP},
+                #{hotelId,jdbcType=INTEGER})
+    </insert>
+    <insert id="insertSelective" parameterType="com.johnny.hm.bean.Room">
+        insert into room
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="roomNo != null">
+                roomNo,
+            </if>
+            <if test="mergeStatus != null">
+                mergeStatus,
+            </if>
+            <if test="floorId != null">
+                floorId,
+            </if>
+            <if test="checkInTime != null">
+                checkInTime,
+            </if>
+            <if test="machineCode != null">
+                machineCode,
+            </if>
+            <if test="guestName != null">
+                guestName,
+            </if>
+            <if test="roomTypeId != null">
+                roomTypeId,
+            </if>
+            <if test="roomStatus != null">
+                roomStatus,
+            </if>
+            <if test="enabled != null">
+                enabled,
+            </if>
+            <if test="createDate != null">
+                createDate,
+            </if>
+            <if test="ip != null">
+                ip,
+            </if>
+            <if test="port != null">
+                port,
+            </if>
+            <if test="isOnline != null">
+                isOnLine,
+            </if>
+            <if test="logicVersion != null">
+                LogicVersion,
+            </if>
+            <if test="roomStatusChangeTime != null">
+                roomStatusChangeTime,
+            </if>
+            <if test="airSettingSendStatus != null">
+                airSettingSendStatus,
+            </if>
+            <if test="energySettingSendStatus != null">
+                energySettingSendStatus,
+            </if>
+            <if test="takePowerSettingSendStatus != null">
+                takePowerSettingSendStatus,
+            </if>
+            <if test="seasonSettingSendStatus != null">
+                seasonSettingSendStatus,
+            </if>
+            <if test="expiredDate != null">
+                expiredDate,
+            </if>
+            <if test="serverTime != null">
+                serverTime,
+            </if>
+            <if test="hotelId != null">
+                hotelId,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="roomNo != null">
+                #{roomNo,jdbcType=VARCHAR},
+            </if>
+            <if test="mergeStatus != null">
+                #{mergeStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="floorId != null">
+                #{floorId,jdbcType=INTEGER},
+            </if>
+            <if test="checkInTime != null">
+                #{checkInTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="machineCode != null">
+                #{machineCode,jdbcType=VARCHAR},
+            </if>
+            <if test="guestName != null">
+                #{guestName,jdbcType=VARCHAR},
+            </if>
+            <if test="roomTypeId != null">
+                #{roomTypeId,jdbcType=INTEGER},
+            </if>
+            <if test="roomStatus != null">
+                #{roomStatus,jdbcType=INTEGER},
+            </if>
+            <if test="enabled != null">
+                #{enabled,jdbcType=BIT},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="ip != null">
+                #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="port != null">
+                #{port,jdbcType=VARCHAR},
+            </if>
+            <if test="isOnline != null">
+                #{isOnline,jdbcType=BIT},
+            </if>
+            <if test="logicVersion != null">
+                #{logicVersion,jdbcType=INTEGER},
+            </if>
+            <if test="roomStatusChangeTime != null">
+                #{roomStatusChangeTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="airSettingSendStatus != null">
+                #{airSettingSendStatus,jdbcType=BIT},
+            </if>
+            <if test="energySettingSendStatus != null">
+                #{energySettingSendStatus,jdbcType=BIT},
+            </if>
+            <if test="takePowerSettingSendStatus != null">
+                #{takePowerSettingSendStatus,jdbcType=BIT},
+            </if>
+            <if test="seasonSettingSendStatus != null">
+                #{seasonSettingSendStatus,jdbcType=BIT},
+            </if>
+            <if test="expiredDate != null">
+                #{expiredDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="serverTime != null">
+                #{serverTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="hotelId != null">
+                #{hotelId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.johnny.hm.bean.Room">
+        update room
+        <set>
+            <if test="roomNo != null">
+                roomNo = #{roomNo,jdbcType=VARCHAR},
+            </if>
+            <if test="mergeStatus != null">
+                mergeStatus = #{mergeStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="floorId != null">
+                floorId = #{floorId,jdbcType=INTEGER},
+            </if>
+            <if test="checkInTime != null">
+                checkInTime = #{checkInTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="machineCode != null">
+                machineCode = #{machineCode,jdbcType=VARCHAR},
+            </if>
+            <if test="guestName != null">
+                guestName = #{guestName,jdbcType=VARCHAR},
+            </if>
+            <if test="roomTypeId != null">
+                roomTypeId = #{roomTypeId,jdbcType=INTEGER},
+            </if>
+            <if test="roomStatus != null">
+                roomStatus = #{roomStatus,jdbcType=INTEGER},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled,jdbcType=BIT},
+            </if>
+            <if test="createDate != null">
+                createDate = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="ip != null">
+                ip = #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="port != null">
+                port = #{port,jdbcType=VARCHAR},
+            </if>
+            <if test="isOnline != null">
+                isOnLine = #{isOnline,jdbcType=BIT},
+            </if>
+            <if test="logicVersion != null">
+                LogicVersion = #{logicVersion,jdbcType=INTEGER},
+            </if>
+            <if test="roomStatusChangeTime != null">
+                roomStatusChangeTime = #{roomStatusChangeTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="airSettingSendStatus != null">
+                airSettingSendStatus = #{airSettingSendStatus,jdbcType=BIT},
+            </if>
+            <if test="energySettingSendStatus != null">
+                energySettingSendStatus = #{energySettingSendStatus,jdbcType=BIT},
+            </if>
+            <if test="takePowerSettingSendStatus != null">
+                takePowerSettingSendStatus = #{takePowerSettingSendStatus,jdbcType=BIT},
+            </if>
+            <if test="seasonSettingSendStatus != null">
+                seasonSettingSendStatus = #{seasonSettingSendStatus,jdbcType=BIT},
+            </if>
+            <if test="expiredDate != null">
+                expiredDate = #{expiredDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="serverTime != null">
+                serverTime = #{serverTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="hotelId != null">
+                hotelId = #{hotelId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.johnny.hm.bean.Room">
+        update room
+        set roomNo                     = #{roomNo,jdbcType=VARCHAR},
+            mergeStatus                = #{mergeStatus,jdbcType=VARCHAR},
+            floorId                    = #{floorId,jdbcType=INTEGER},
+            checkInTime                = #{checkInTime,jdbcType=TIMESTAMP},
+            machineCode                = #{machineCode,jdbcType=VARCHAR},
+            guestName                  = #{guestName,jdbcType=VARCHAR},
+            roomTypeId                 = #{roomTypeId,jdbcType=INTEGER},
+            roomStatus                 = #{roomStatus,jdbcType=INTEGER},
+            enabled                    = #{enabled,jdbcType=BIT},
+            createDate                 = #{createDate,jdbcType=TIMESTAMP},
+            ip                         = #{ip,jdbcType=VARCHAR},
+            port                       = #{port,jdbcType=VARCHAR},
+            isOnLine                   = #{isOnline,jdbcType=BIT},
+            LogicVersion               = #{logicVersion,jdbcType=INTEGER},
+            roomStatusChangeTime       = #{roomStatusChangeTime,jdbcType=TIMESTAMP},
+            airSettingSendStatus       = #{airSettingSendStatus,jdbcType=BIT},
+            energySettingSendStatus    = #{energySettingSendStatus,jdbcType=BIT},
+            takePowerSettingSendStatus = #{takePowerSettingSendStatus,jdbcType=BIT},
+            seasonSettingSendStatus    = #{seasonSettingSendStatus,jdbcType=BIT},
+            expiredDate                = #{expiredDate,jdbcType=TIMESTAMP},
+            serverTime                 = #{serverTime,jdbcType=TIMESTAMP},
+            hotelId                    = #{hotelId,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateRoom" parameterType="com.johnny.hm.bean.Room">
+        update room
+        set roomNo      = #{roomNo,jdbcType=VARCHAR},
+            floorId     = #{floorId,jdbcType=INTEGER},
+            roomTypeId  = #{roomTypeId,jdbcType=INTEGER},
+            createDate  = #{createDate,jdbcType=TIMESTAMP},
+            machineCode = #{machineCode,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

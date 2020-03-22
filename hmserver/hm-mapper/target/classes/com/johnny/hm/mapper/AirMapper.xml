@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.johnny.hm.mapper.AirMapper">
+    <resultMap id="BaseResultMap" type="com.johnny.hm.bean.Air">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="airNo" property="airNo" jdbcType="INTEGER"/>
+        <result column="airName" property="airName" jdbcType="VARCHAR"/>
+        <result column="roomTypeId" property="roomTypeId" jdbcType="INTEGER"/>
+        <result column="airStrategyId" property="airStrategyId" jdbcType="INTEGER"/>
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="ResultWithStrategy" type="com.johnny.hm.bean.Air" extends="BaseResultMap">
+        <association property="airStrategy" javaType="com.johnny.hm.bean.AirStrategy">
+            <id column="sid" property="id" jdbcType="INTEGER"/>
+            <result column="sname" property="name" jdbcType="VARCHAR"/>
+        </association>
+        <association property="roomType" javaType="com.johnny.hm.bean.RoomType">
+            <id column="rid" property="id" jdbcType="INTEGER"/>
+            <result column="rname" property="name" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, airNo, airName, roomTypeId, createTime, updateTime,airStrategyId
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from air
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <!--查询带策略的空调-->
+    <select id="getAirWithStrategy" resultMap="ResultWithStrategy">
+        select a.*, airs.id as sid, airs.`name` as sname, r.id as rid, r.`name` as rname
+        from air a
+                 LEFT JOIN airstrategy airs on a.airstrategyid = airs.id
+                 LEFT JOIN roomtype r on r.id = a.roomTypeId
+        where r.hotelId = #{id}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from air
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <!--根据房型删除所有空调-->
+    <delete id="deleteAirs">
+        delete
+        from air
+        where roomTypeId = #{roomTypeId}
+    </delete>
+    <insert id="insert" parameterType="com.johnny.hm.bean.Air">
+        insert into air (id, airNo, airName,
+                         roomTypeId, createTime, updateTime, airStrategyId)
+        values (#{id,jdbcType=INTEGER}, #{airno,jdbcType=INTEGER}, #{airname,jdbcType=VARCHAR},
+                #{roomtypeid,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP},
+                #{airStrategyId,jdbcType=INTEGER})
+    </insert>
+    <insert id="insertSelective" parameterType="com.johnny.hm.bean.Air">
+        insert into air
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="airno != null">
+                airNo,
+            </if>
+            <if test="airname != null">
+                airName,
+            </if>
+            <if test="roomtypeid != null">
+                roomTypeId,
+            </if>
+            <if test="createtime != null">
+                createTime,
+            </if>
+            <if test="updatetime != null">
+                updateTime,
+            </if>
+            <if test="airstrategyid != null">
+                roomTypeId,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="airno != null">
+                #{airno,jdbcType=INTEGER},
+            </if>
+            <if test="airname != null">
+                #{airname,jdbcType=VARCHAR},
+            </if>
+            <if test="roomtypeid != null">
+                #{roomtypeid,jdbcType=INTEGER},
+            </if>
+            <if test="createtime != null">
+                #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatetime != null">
+                #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="airstrategyid != null">
+                #{airstrategyid,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <!--插入空调-->
+    <insert id="putAirs">
+        insert into air (airNo,airName,roomTypeId) values
+        <foreach collection="airs" item="air" separator=",">
+            (#{air.airNo},#{air.airName},#{air.roomTypeId})
+        </foreach>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.johnny.hm.bean.Air">
+        update air
+        <set>
+            <if test="airno != null">
+                airNo = #{airno,jdbcType=INTEGER},
+            </if>
+            <if test="airname != null">
+                airName = #{airname,jdbcType=VARCHAR},
+            </if>
+            <if test="roomtypeid != null">
+                roomTypeId = #{roomtypeid,jdbcType=INTEGER},
+            </if>
+            <if test="createtime != null">
+                createTime = #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatetime != null">
+                updateTime = #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.johnny.hm.bean.Air">
+        update air
+        set airNo         = #{airno,jdbcType=INTEGER},
+            airName       = #{airname,jdbcType=VARCHAR},
+            roomTypeId    = #{roomtypeid,jdbcType=INTEGER},
+            airStrategyId = #{airstrategyid,jdbcType=INTEGER},
+            createTime    = #{createtime,jdbcType=TIMESTAMP},
+            updateTime    = #{updatetime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <!--更新空调策略-->
+    <update id="changeStrategy">
+        update air
+        set airStrategyId = #{airStrategyId,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>
