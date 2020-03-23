@@ -1,8 +1,11 @@
 package com.johnny.udpserver.udp.cache;
 
 import com.johnny.udpserver.udp.Code;
+import com.johnny.udpserver.utils.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +14,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServiceMessageCache {
+    @Autowired
+    static RedisTemplate redisTemplate;
     public static Logger logger = LoggerFactory.getLogger(ServiceMessageCache.class);
     /**
      * 等待处理的服务器服务信息列表
@@ -33,6 +38,7 @@ public class ServiceMessageCache {
     public static void AddServiceMsg(String msg) {
         int cmd = getCommand(msg);
         switch (cmd) {
+            case 0x01:
             case Code.GET_MAC_VERSION:
             case Code.MAC_CRC_CHECK:
             case Code.MAC_FIRMWARE_ENCRYPTION:
@@ -111,10 +117,12 @@ public class ServiceMessageCache {
         String code = msg.substring(40, 48);
         Long mac = Long.parseLong(code, 16);
         int cmd = getCommand(msg);
+        String addr = ip + "#" + port;
         if (cmd == 0x7f || cmd == 0x30 || cmd == 0x88) {
             if (MapIPPort.containsKey(mac)) {
                 MapIPPort.remove(mac);
-                MapIPPort.put(mac, ip + "#" + port);
+                MapIPPort.put(mac, addr);
+                RedisUtil.sSetEx(String.valueOf(mac),addr,90L);
                 logger.info("***更新设备Ip端口信息***机器码:" + mac + ",Ip:" + ip + ",port:" + port);
                 if (cmd == 0x7f) {
                     MacModeMap.remove(mac);
@@ -126,7 +134,8 @@ public class ServiceMessageCache {
                     logger.info("更新硬件模式,机器码:" + mac + ",Mode:应用模式");
                 }
             } else {
-                MapIPPort.put(mac, ip + "#" + port);
+                MapIPPort.put(mac, addr);
+                RedisUtil.sSetEx(String.valueOf(mac),addr,90L);
                 logger.info("---新增设备Ip端口信息---机器码:" + mac + ",Ip:" + ip + ",port:" + port);
                 MacModeMap.put(mac, 0);
                 logger.info("新增硬件模式,机器码:" + mac + ",默认为等待模式,直到接收到指定硬件信息");

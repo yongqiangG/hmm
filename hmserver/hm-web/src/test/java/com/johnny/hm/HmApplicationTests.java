@@ -1,13 +1,29 @@
 package com.johnny.hm;
 
+import com.johnny.hm.bean.Role;
+import com.johnny.hm.mapper.HrMapper;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.HashMap;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class HmApplicationTests {
-    /*@Autowired
+    @Autowired
     HrMapper hrMapper;
     @Autowired
     AmqpAdmin amqpAdmin;
@@ -31,15 +47,15 @@ public class HmApplicationTests {
     //rabbitmq
     @Test
     public void amqp() {
-        amqpAdmin.declareExchange(new DirectExchange("myDirectExchange"));
-        amqpAdmin.declareQueue(new Queue("myQueue"));
-        amqpAdmin.declareBinding(new Binding("myQueue", Binding.DestinationType.QUEUE, "myDirectExchange", "johnny", null));
+        amqpAdmin.declareExchange(new DirectExchange("myRecvDirectExchange"));
+        amqpAdmin.declareQueue(new Queue("myRecvQueue"));
+        amqpAdmin.declareBinding(new Binding("myRecvQueue", Binding.DestinationType.QUEUE, "myRecvDirectExchange", "johnnyrecv", null));
     }
 
     @Test
     public void sendMsg() throws InterruptedException {
-        *//*HashMap<String, Object> map = new HashMap<>();
-        map.put("name","johnny");*//*
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("name","johnny");
         for (int i = 0; i < 10; i++) {
             rabbitTemplate.convertAndSend("myDirectExchange", "johnny", "123456789");
         }
@@ -71,6 +87,6 @@ public class HmApplicationTests {
 
     @Test
     public void contextLoads() {
-    }*/
+    }
 
 }

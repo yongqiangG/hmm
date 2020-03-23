@@ -2,6 +2,7 @@ package com.johnny.udpserver.udp;
 
 import com.johnny.udpserver.udp.cache.MsgCache;
 import com.johnny.udpserver.udp.cache.ServiceMessageCache;
+import com.johnny.udpserver.utils.RabbitMqUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,9 @@ public class MessageCallService {
         int cmd = getCommand(msg);
         //logger.info("cmd={}",cmd);
         switch (cmd) {
+            case 0x01:
+                bindRecv(msg);
+                break;
             case Code.MAC_HEART_BEAT:
                 //0x88
                 refreshMacStatus();
@@ -38,10 +42,10 @@ public class MessageCallService {
                 break;
             case Code.MAC_FIRMWARE_UPGRADE:
                 //0x72
-                if(getReady(msg)){
-                    logger.info("硬件回复ready,接收到的数据"+msg);
-                }else{
-                    logger.info("硬件回复error,接收到的数据:"+msg);
+                if (getReady(msg)) {
+                    logger.info("硬件回复ready,接收到的数据" + msg);
+                } else {
+                    logger.info("硬件回复error,接收到的数据:" + msg);
                 }
                 sendMacFirmwareUpgrade(msg);
                 break;
@@ -59,12 +63,12 @@ public class MessageCallService {
                 break;
             case Code.MAC_RESET_SHAKE:
                 //0x70
-                if(MsgCache.machineCodeTo70.equals(getMacCode(msg))){
-                    logger.info("监测到指定机器码"+MsgCache.machineCodeTo70+"的70指令,即将反馈进入烧写模式");
+                if (MsgCache.machineCodeTo70.equals(getMacCode(msg))) {
+                    logger.info("监测到指定机器码" + MsgCache.machineCodeTo70 + "的70指令,即将反馈进入烧写模式");
                     sendMacResetShake(msg, client);
                 }
                 //sendMacResetShake(msg, client);
-                logger.info("屏蔽非指定机器码"+getMacCode(msg)+"进入烧写模式");
+                logger.info("屏蔽非指定机器码" + getMacCode(msg) + "进入烧写模式");
                 break;
             case Code.MAC_TO_WORK:
                 //0x71
@@ -79,6 +83,16 @@ public class MessageCallService {
                 break;
         }
     }
+
+    private void bindRecv(String msg) {
+        boolean ready = getReady(msg);
+        if (ready == true) {
+            RabbitMqUtil.send("myRecvDirectExchange", "johnnyRecv", "01回复成功");
+        }else{
+            RabbitMqUtil.send("myRecvDirectExchange", "johnnyRecv", "01回复失败");
+        }
+    }
+
     //根据机器码和酒店ID,更新硬件端口和IP
     private void refreshMacStatus() {
 
@@ -98,7 +112,7 @@ public class MessageCallService {
         String ip = ServiceMessageCache.getIpByMac(machineCode);
         int port = ServiceMessageCache.getPort(Long.parseLong(machineCode));
         //接收到主机复位重启的0x70指令
-        MessageSender.sendMacResetShake(machineCode,ip,port);
+        MessageSender.sendMacResetShake(machineCode, ip, port);
 
 
     }
@@ -117,18 +131,18 @@ public class MessageCallService {
 
     private void sendMacFirmwareUpgrade(String msg) {
         String seq = getSeq(msg);
-        if(getReady(msg)){
+        if (getReady(msg)) {
             MsgCache.sendPCCurrentIndex = 1;
-        }else{
-            logger.info("硬件未回复ready,接收到的数据:"+msg);
+        } else {
+            logger.info("硬件未回复ready,接收到的数据:" + msg);
         }
-        if("0".equals(seq)){
+        if ("0".equals(seq)) {
             //当接收到第一条72数据时开启发送线程
             String machineCode = getMacCode(msg);
             String ip = ServiceMessageCache.getIpByMac(machineCode);
             int port = ServiceMessageCache.getPort(Long.parseLong(machineCode));
             logger.info("接收到第一条72返回,开启线程");
-            new LogicMsgPCSenderThread(msg,ip,port,machineCode).start();
+            new LogicMsgPCSenderThread(msg, ip, port, machineCode).start();
         }
     }
 
@@ -186,12 +200,13 @@ public class MessageCallService {
 
     /**
      * 判断是否回复成功
+     *
      * @param msg
      * @return
      */
-    public static boolean getReady(String msg){
-        String readyMsg = msg.substring(50,60);
-        if("5245414459".equals(readyMsg)){
+    public static boolean getReady(String msg) {
+        String readyMsg = msg.substring(50, 60);
+        if ("5245414459".equals(readyMsg)) {
             return true;
         }
         return false;
@@ -214,7 +229,7 @@ class LogicMsgPCSenderThread extends Thread {
     private String machineIp;
     private int machinePort;
 
-    public LogicMsgPCSenderThread(String msg,String machineIp,int machinePort,String machineCode) {
+    public LogicMsgPCSenderThread(String msg, String machineIp, int machinePort, String machineCode) {
         this.msg = msg;
         this.machineIp = machineIp;
         this.machinePort = machinePort;
@@ -244,19 +259,19 @@ class LogicMsgPCSenderThread extends Thread {
         Long t1 = System.currentTimeMillis();
         int sendErrorCount = 0;
         //从第二条72数据开始发
-        for(int i=1;i<ServiceMessageCache.firmwareDataList.size();i++){
-            if(MsgCache.stopFirmwareUpgrade==1){
+        for (int i = 1; i < ServiceMessageCache.firmwareDataList.size(); i++) {
+            if (MsgCache.stopFirmwareUpgrade == 1) {
                 break;
             }
             String s = ServiceMessageCache.firmwareDataList.get(i);
-            while(true){
-                if(sendErrorCount>3){
+            while (true) {
+                if (sendErrorCount > 3) {
                     //重发四次无响应
                     return;
                 }
                 //发送第二条固件升级数据
-                MessageSender.sendLogicTableRowDataPC(i,machineCode,machineIp,machinePort,s);
-                MsgCache.sendPCCurrentIndex=0;
+                MessageSender.sendLogicTableRowDataPC(i, machineCode, machineIp, machinePort, s);
+                MsgCache.sendPCCurrentIndex = 0;
                 MsgCache.sendSuccessCount++;
                 if (checkRCUback()) {
                     break;
@@ -265,21 +280,21 @@ class LogicMsgPCSenderThread extends Thread {
             }
         }
         //发送结束指令
-        try{
-            MessageSender.sendFirmwareInfoToMac(machineCode,machineIp,machinePort);
+        try {
+            MessageSender.sendFirmwareInfoToMac(machineCode, machineIp, machinePort);
             Thread.sleep(300);
-            MessageSender.sendMacCrcCheck(machineCode,machineIp,machinePort);
+            MessageSender.sendMacCrcCheck(machineCode, machineIp, machinePort);
             Thread.sleep(300);
-            MessageSender.sendMacFirmwareEncryption(machineCode,machineIp,machinePort);
+            MessageSender.sendMacFirmwareEncryption(machineCode, machineIp, machinePort);
             Thread.sleep(300);
-            MessageSender.sendMacFirmwareUpgradeEnd(machineCode,machineIp,machinePort);
+            MessageSender.sendMacFirmwareUpgradeEnd(machineCode, machineIp, machinePort);
             Thread.sleep(300);
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
         MsgCache.clearSend();
         MsgCache.successUpgrade = 1;
         Long t2 = System.currentTimeMillis();
-        logger.info("总耗时={}",t2-t1);
+        logger.info("总耗时={}", t2 - t1);
     }
 }
