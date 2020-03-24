@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>hm</artifactId>
+        <artifactId>hmm</artifactId>
         <groupId>com.johnny</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -15,6 +15,7 @@
         <module>hm-mapper</module>
         <module>hm-model</module>
         <module>hm-service</module>
+        <module>hm-web</module>
     </modules>
 
 

@@ -61,11 +61,11 @@ public class HmApplicationTests {
         }
     }
 
-    @Test
+    /*@Test
     public void recvMsg() {
         Object msg = rabbitTemplate.receiveAndConvert("myQueue");
         System.out.println(msg.toString());
-    }
+    }*/
 
     //加密
     @Test
